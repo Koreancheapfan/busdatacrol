@@ -15,11 +15,14 @@ for i in range(1, 1000):
     response = requests.get(url, params=params)
     soup = BeautifulSoup(response.content, 'xml')
     locations = soup.select('busLocationList')
+    save = open("test2.csv", "w")
     for busLocationList in locations:
         queryTime= soup.select_one('queryTime').text
         routeId = busLocationList.select_one('routeId').text
         stationId = busLocationList.select_one('stationId').text
         stationSeq = busLocationList.select_one('stationSeq').text
         plateNo = busLocationList.select_one('plateNo').text
-        list = [queryTime,routeId]
+        list = [queryTime,routeId,stationId,stationSeq,plateNo]
+        print(list)
+        save.write(list)
     time.sleep(60)
