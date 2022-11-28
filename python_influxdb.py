@@ -12,31 +12,15 @@ import time
 key = 'Fl+MjXgGrTViuvJTy/RB8zodh2OEXStIUPEaFDSeUHAN5iMIG8zqFW4ROqV//eIee3K9KmL3TdAQQmm4cmnoOQ=='
 rid = '235000092'
 
-
-url = 'http://apis.data.go.kr/6410000/buslocationservice/getBusLocationList'
-params ={'serviceKey' : key, 'routeId' : rid }
-response = requests.get(url, params=params)
-soup = BeautifulSoup(response.content, 'xml')
-locations = soup.select('busLocationList')
-for busLocationList in locations:
-    queryTime= soup.select_one('queryTime').text
-    routeId = busLocationList.select_one('routeId').text
-    stationId = busLocationList.select_one('stationId').text
-    stationSeq = busLocationList.select_one('stationSeq').text
-    plateNo = busLocationList.select_one('plateNo').text
-    print(queryTime, routeId ,stationSeq, stationId, plateNo)
-
-
 def get_ifdb(db, host='54.180.128.66', port=8086, user='ssg', passwd='qwer1234'):
-    # Create an object include information for connect to the InfluxDB
+    # InfluxDB에 연결하기 위한 정보를 포함하는 객체 생성
     client = InfluxDBClient(host, port, user, passwd, db)
 
     try:
-        # Try to Create database
+        # 데이터베이스 생성 시도.
         client.create_database(db)
 
-        # If you can create database or have a database
-        # there is no problem connecting to the InfluxDB
+        # DB를 만들 수 있거나 DB가 있는 경우
         print('========접속  성공=======')
         print('=======================')
         print('        접속  정보')
@@ -46,14 +30,14 @@ def get_ifdb(db, host='54.180.128.66', port=8086, user='ssg', passwd='qwer1234')
         print('username :', user)
         print('database :', db)
     except:
-        # Generate error if you can't create database (can't connect to ifdb)
+        # DB에 접속을 할수 없는경우
         print('Connection Failed')
         pass
 
     return client
 
 
-def my_test(ifdb):
+def bus_data(ifdb):
     url = 'http://apis.data.go.kr/6410000/buslocationservice/getBusLocationList'
     params = {'serviceKey': key, 'routeId': rid}
     response = requests.get(url, params=params)
@@ -65,10 +49,9 @@ def my_test(ifdb):
         stationId = busLocationList.select_one('stationId').text
         stationSeq = busLocationList.select_one('stationSeq').text
         plateNo = busLocationList.select_one('plateNo').text
-
         json_body = []
-        tablename = 'bus'
-        fieldname = 'bus_info'
+        tablename = 'G1300'
+        fieldname = 'zero'
         point = {            "measurement": tablename,
             "tags": {
                 "routeId": routeId,
@@ -95,24 +78,21 @@ def my_test(ifdb):
             json_body.append(np)
 
 
-        # Write the data for 10 seconds on the influxDB at once
-        ifdb.write_points(json_body)
-    # save points in the json_body
 
-    # vals = [1, 2, ... 9, 10]
+        ifdb.write_points(json_body)    #json_body에 저장
 
 
     result = ifdb.query('select * from %s' % tablename)
     pprint.pprint(result.raw)
 
 
-def do_test():
-    # Connect to InfluxDB
-    mydb = get_ifdb(db='myDB')
+def data_save():
+    # InfluxDB에 접속
+    bus_db = get_ifdb(db='Bus_DB')
 
     # DB에 데이터 쓰기
-    my_test(mydb)
+    bus_data(bus_db)
 
 
 if __name__ == '__main__':
-    do_test()
+    data_save()
