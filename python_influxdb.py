@@ -68,9 +68,7 @@ def bus_data(ifdb):
         vals = list(range(1))
 
         for v in vals:
-            # InfluxDB is based on UTC
-            # so it should be timed with KCT
-            dt = datetime.now() - timedelta(hours=-9)
+            dt = datetime.now() - timedelta(hours=-9) #한국시간으로 설정하기위해 UTC에서 9시간을 뺌
 
             np = deepcopy(point)
             np['fields'][fieldname] = v
