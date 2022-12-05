@@ -88,7 +88,7 @@ for i in range(1140):
 
                 ifdb.write_points(json_body)  # json_body에 저장
                 result = ifdb.query('select * from %s' % tablename)
-                pprint.pprint(result.raw)
+              
 
                 if len(Hometimelist) != 0:
                     if bt > Hometimelist[0] + 20:
@@ -135,7 +135,7 @@ for i in range(1140):
 
                         ifdb.write_points(json_body)  # json_body에 저장
                         result = ifdb.query('select * from %s' % tablename)
-                        pprint.pprint(result.raw)
+                     
                 if len(Awaybuslist) == 0 or plateNo not in Homebuslist:
                     if stationId == "277102301" and plateNo not in Awaybuslist:  # 만약 기점 정류장이면 기점 정류장에있는 버스 정보 저장
                         Awaybuslist.append(plateNo)
@@ -168,7 +168,7 @@ for i in range(1140):
 
                         ifdb.write_points(json_body)  # json_body에 저장
                         result = ifdb.query('select * from %s' % tablename)
-                        pprint.pprint(result.raw)
+                        
 
 
         def data_save():
@@ -194,7 +194,7 @@ for i in range(1140):
         # print(ct)
         # print(queryTime)
         time.sleep(60)
-    except:
+    except TimeoutError:
         pass
 
 
